@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@remix-run/dev@1.18.1':
+    hash: r43fqnlyxk3u7l7q564fayukee
+    path: patches/@remix-run__dev@1.18.1.patch
+
 dependencies:
   '@remix-run/css-bundle':
     specifier: ^1.18.1
@@ -33,7 +38,7 @@ dependencies:
 devDependencies:
   '@remix-run/dev':
     specifier: ^1.18.1
-    version: 1.18.1(@remix-run/serve@1.18.1)
+    version: 1.18.1(patch_hash=r43fqnlyxk3u7l7q564fayukee)(@remix-run/serve@1.18.1)
   '@remix-run/eslint-config':
     specifier: ^1.18.1
     version: 1.18.1(eslint@8.38.0)(react@18.2.0)(typescript@5.0.4)
@@ -1898,7 +1903,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dev: false
 
-  /@remix-run/dev@1.18.1(@remix-run/serve@1.18.1):
+  /@remix-run/dev@1.18.1(patch_hash=r43fqnlyxk3u7l7q564fayukee)(@remix-run/serve@1.18.1):
     resolution: {integrity: sha512-uT+YRGiR17p51y284MvEZMpkFkIykJ0uTVP3hepW0fvtoD+dt09DFVk1AQkJhEKlIVECkyR9lrOtceP/2qML6w==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -1978,6 +1983,7 @@ packages:
       - ts-node
       - utf-8-validate
     dev: true
+    patched: true
 
   /@remix-run/eslint-config@1.18.1(eslint@8.38.0)(react@18.2.0)(typescript@5.0.4):
     resolution: {integrity: sha512-r0vjv+//isRseRShZ6RbX2bJSjQzfE7R2KOf4v1v+EVQZ59Vk0cR6UPwlxHN4Wc3jtTa2yBlLCm1H24ImKLQ4Q==}
