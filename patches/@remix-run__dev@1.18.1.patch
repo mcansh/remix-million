@@ -1,281 +1,33 @@
 diff --git a/dist/compiler/js/compiler.js b/dist/compiler/js/compiler.js
-index 70caef1774fe44b3ebf4778b36b1deabb151fa0a..b2cb6589fc0bac48f91082d8461588c4c574c11c 100644
+index 70caef1774fe44b3ebf4778b36b1deabb151fa0a..d3aef3e768aa2948b38009a8bc2fee28e8a6639b 100644
 --- a/dist/compiler/js/compiler.js
 +++ b/dist/compiler/js/compiler.js
-@@ -8,41 +8,50 @@
-  *
-  * @license MIT
-  */
--'use strict';
-+"use strict";
- 
--Object.defineProperty(exports, '__esModule', { value: true });
-+Object.defineProperty(exports, "__esModule", { value: true });
- 
--var path = require('path');
--var module$1 = require('module');
--var esbuild = require('esbuild');
--var esbuildPluginsNodeModulesPolyfill = require('esbuild-plugins-node-modules-polyfill');
--var dependencies = require('../../dependencies.js');
--var loaders = require('../utils/loaders.js');
--var routes = require('./plugins/routes.js');
--var cssImports = require('../plugins/cssImports.js');
--var absoluteCssUrlsPlugin = require('../plugins/absoluteCssUrlsPlugin.js');
--var deprecatedRemixPackage = require('../plugins/deprecatedRemixPackage.js');
--var emptyModules = require('../plugins/emptyModules.js');
--var mdx = require('../plugins/mdx.js');
--var external = require('../plugins/external.js');
--var cssBundlePlugin = require('../plugins/cssBundlePlugin.js');
--var cssModuleImports = require('../plugins/cssModuleImports.js');
--var cssSideEffectImports = require('../plugins/cssSideEffectImports.js');
--var vanillaExtract = require('../plugins/vanillaExtract.js');
--var invariant = require('../../invariant.js');
--var hmr = require('./plugins/hmr.js');
-+var path = require("path");
-+var module$1 = require("module");
-+var esbuild = require("esbuild");
-+var esbuildPluginsNodeModulesPolyfill = require("esbuild-plugins-node-modules-polyfill");
-+var dependencies = require("../../dependencies.js");
-+var loaders = require("../utils/loaders.js");
-+var routes = require("./plugins/routes.js");
-+var cssImports = require("../plugins/cssImports.js");
-+var absoluteCssUrlsPlugin = require("../plugins/absoluteCssUrlsPlugin.js");
-+var deprecatedRemixPackage = require("../plugins/deprecatedRemixPackage.js");
-+var emptyModules = require("../plugins/emptyModules.js");
-+var mdx = require("../plugins/mdx.js");
-+var external = require("../plugins/external.js");
-+var cssBundlePlugin = require("../plugins/cssBundlePlugin.js");
-+var cssModuleImports = require("../plugins/cssModuleImports.js");
-+var cssSideEffectImports = require("../plugins/cssSideEffectImports.js");
-+var vanillaExtract = require("../plugins/vanillaExtract.js");
-+var invariant = require("../../invariant.js");
-+var hmr = require("./plugins/hmr.js");
-+var million = require("million/compiler");
+@@ -31,6 +31,7 @@ var cssSideEffectImports = require('../plugins/cssSideEffectImports.js');
+ var vanillaExtract = require('../plugins/vanillaExtract.js');
+ var invariant = require('../../invariant.js');
+ var hmr = require('./plugins/hmr.js');
++var million = require('million/compiler');
  
  function _interopNamespace(e) {
    if (e && e.__esModule) return e;
-   var n = Object.create(null);
-   if (e) {
-     Object.keys(e).forEach(function (k) {
--      if (k !== 'default') {
-+      if (k !== "default") {
-         var d = Object.getOwnPropertyDescriptor(e, k);
--        Object.defineProperty(n, k, d.get ? d : {
--          enumerable: true,
--          get: function () { return e[k]; }
--        });
-+        Object.defineProperty(
-+          n,
-+          k,
-+          d.get
-+            ? d
-+            : {
-+                enumerable: true,
-+                get: function () {
-+                  return e[k];
-+                },
-+              }
-+        );
-       }
-     });
-   }
-@@ -50,25 +59,33 @@ function _interopNamespace(e) {
-   return Object.freeze(n);
- }
- 
--var path__namespace = /*#__PURE__*/_interopNamespace(path);
--var esbuild__namespace = /*#__PURE__*/_interopNamespace(esbuild);
-+var path__namespace = /*#__PURE__*/ _interopNamespace(path);
-+var esbuild__namespace = /*#__PURE__*/ _interopNamespace(esbuild);
- 
--const getExternals = remixConfig => {
-+const getExternals = (remixConfig) => {
-   // For the browser build, exclude node built-ins that don't have a
-   // browser-safe alternative installed in node_modules. Nothing should
-   // *actually* be external in the browser build (we want to bundle all deps) so
-   // this is really just making sure we don't accidentally have any dependencies
-   // on node built-ins in browser bundles.
--  let dependencies$1 = Object.keys(dependencies.getAppDependencies(remixConfig));
--  let fakeBuiltins = module$1.builtinModules.filter(mod => dependencies$1.includes(mod));
-+  let dependencies$1 = Object.keys(
-+    dependencies.getAppDependencies(remixConfig)
-+  );
-+  let fakeBuiltins = module$1.builtinModules.filter((mod) =>
-+    dependencies$1.includes(mod)
-+  );
-   if (fakeBuiltins.length > 0) {
--    throw new Error(`It appears you're using a module that is built in to node, but you installed it as a dependency which could cause problems. Please remove ${fakeBuiltins.join(", ")} before continuing.`);
-+    throw new Error(
-+      `It appears you're using a module that is built in to node, but you installed it as a dependency which could cause problems. Please remove ${fakeBuiltins.join(
-+        ", "
-+      )} before continuing.`
-+    );
-   }
--  return module$1.builtinModules.filter(mod => !dependencies$1.includes(mod));
-+  return module$1.builtinModules.filter((mod) => !dependencies$1.includes(mod));
- };
- const createEsbuildConfig = (ctx, refs) => {
-   let entryPoints = {
--    "entry.client": ctx.config.entryClientFilePath
-+    "entry.client": ctx.config.entryClientFilePath,
-   };
-   for (let id of Object.keys(ctx.config.routes)) {
-     entryPoints[id] = ctx.config.routes[id].file;
-@@ -77,23 +94,57 @@ const createEsbuildConfig = (ctx, refs) => {
-     // that we don't want to run in the browser (i.e. action & loader).
-     entryPoints[id] += "?browser";
-   }
--  if (ctx.options.mode === "development" && ctx.config.future.v2_dev !== false) {
--    let defaultsDirectory = path__namespace.resolve(__dirname, "..", "..", "config", "defaults");
--    entryPoints["__remix_entry_dev"] = path__namespace.join(defaultsDirectory, "entry.dev.ts");
-+  if (
-+    ctx.options.mode === "development" &&
-+    ctx.config.future.v2_dev !== false
-+  ) {
-+    let defaultsDirectory = path__namespace.resolve(
-+      __dirname,
-+      "..",
-+      "..",
-+      "config",
-+      "defaults"
-+    );
-+    entryPoints["__remix_entry_dev"] = path__namespace.join(
-+      defaultsDirectory,
-+      "entry.dev.ts"
-+    );
-   }
--  let plugins = [routes.browserRouteModulesPlugin(ctx, /\?browser$/), deprecatedRemixPackage.deprecatedRemixPackagePlugin(ctx), cssBundlePlugin.cssBundlePlugin(refs), cssModuleImports.cssModulesPlugin(ctx, {
--    outputCss: false
--  }), vanillaExtract.vanillaExtractPlugin(ctx, {
--    outputCss: false
--  }), cssSideEffectImports.cssSideEffectImportsPlugin(ctx, {
--    hmr: ctx.options.mode === "development" && ctx.config.future.v2_dev !== false
--  }), cssImports.cssFilePlugin(ctx), absoluteCssUrlsPlugin.absoluteCssUrlsPlugin(), external.externalPlugin(/^https?:\/\//, {
--    sideEffects: false
--  }), mdx.mdxPlugin(ctx), emptyModules.emptyModulesPlugin(ctx, /\.server(\.[jt]sx?)?$/), emptyModules.emptyModulesPlugin(ctx, /^@remix-run\/(deno|cloudflare|node)(\/.*)?$/, {
--    includeNodeModules: true
--  }), esbuildPluginsNodeModulesPolyfill.nodeModulesPolyfillPlugin(), external.externalPlugin(/^node:.*/, {
--    sideEffects: false
+@@ -93,7 +94,7 @@ const createEsbuildConfig = (ctx, refs) => {
+     includeNodeModules: true
+   }), esbuildPluginsNodeModulesPolyfill.nodeModulesPolyfillPlugin(), external.externalPlugin(/^node:.*/, {
+     sideEffects: false
 -  })];
-+  let plugins = [
-+    routes.browserRouteModulesPlugin(ctx, /\?browser$/),
-+    deprecatedRemixPackage.deprecatedRemixPackagePlugin(ctx),
-+    cssBundlePlugin.cssBundlePlugin(refs),
-+    cssModuleImports.cssModulesPlugin(ctx, {
-+      outputCss: false,
-+    }),
-+    vanillaExtract.vanillaExtractPlugin(ctx, {
-+      outputCss: false,
-+    }),
-+    cssSideEffectImports.cssSideEffectImportsPlugin(ctx, {
-+      hmr:
-+        ctx.options.mode === "development" &&
-+        ctx.config.future.v2_dev !== false,
-+    }),
-+    cssImports.cssFilePlugin(ctx),
-+    absoluteCssUrlsPlugin.absoluteCssUrlsPlugin(),
-+    external.externalPlugin(/^https?:\/\//, {
-+      sideEffects: false,
-+    }),
-+    mdx.mdxPlugin(ctx),
-+    emptyModules.emptyModulesPlugin(ctx, /\.server(\.[jt]sx?)?$/),
-+    emptyModules.emptyModulesPlugin(
-+      ctx,
-+      /^@remix-run\/(deno|cloudflare|node)(\/.*)?$/,
-+      {
-+        includeNodeModules: true,
-+      }
-+    ),
-+    esbuildPluginsNodeModulesPolyfill.nodeModulesPolyfillPlugin(),
-+    external.externalPlugin(/^node:.*/, {
-+      sideEffects: false,
-+    }),
-+    million.esbuild({ server: true })
-+  ];
++  }), million.esbuild({ server: true })];
    if (ctx.options.mode === "development" && ctx.config.future.v2_dev) {
      plugins.push(hmr.hmrPlugin(ctx));
    }
-@@ -121,45 +172,58 @@ const createEsbuildConfig = (ctx, refs) => {
-     publicPath: ctx.config.publicPath,
-     define: {
-       "process.env.NODE_ENV": JSON.stringify(ctx.options.mode),
--      "process.env.REMIX_DEV_SERVER_WS_PORT": JSON.stringify(ctx.config.devServerPort)
-+      "process.env.REMIX_DEV_SERVER_WS_PORT": JSON.stringify(
-+        ctx.config.devServerPort
-+      ),
-     },
-     jsx: "automatic",
-     jsxDev: ctx.options.mode !== "production",
-     plugins,
-     supported: {
--      "import-meta": true
--    }
-+      "import-meta": true,
-+    },
-   };
- };
- const create = async (ctx, refs) => {
-   let compiler = await esbuild__namespace.context({
-     ...createEsbuildConfig(ctx, refs),
--    metafile: true
-+    metafile: true,
-   });
-   let compile = async () => {
--    let {
--      metafile
--    } = await compiler.rebuild();
-+    let { metafile } = await compiler.rebuild();
-     let hmr = undefined;
-     if (ctx.options.mode === "development" && ctx.config.future.v2_dev) {
-       var _Object$entries$find;
--      let hmrRuntimeOutput = (_Object$entries$find = Object.entries(metafile.outputs).find(([_, output]) => output.inputs["hmr-runtime:remix:hmr"])) === null || _Object$entries$find === void 0 ? void 0 : _Object$entries$find[0];
--      invariant["default"](hmrRuntimeOutput, "Expected to find HMR runtime in outputs");
--      let hmrRuntime = ctx.config.publicPath + path__namespace.relative(ctx.config.assetsBuildDirectory, path__namespace.resolve(hmrRuntimeOutput));
-+      let hmrRuntimeOutput =
-+        (_Object$entries$find = Object.entries(metafile.outputs).find(
-+          ([_, output]) => output.inputs["hmr-runtime:remix:hmr"]
-+        )) === null || _Object$entries$find === void 0
-+          ? void 0
-+          : _Object$entries$find[0];
-+      invariant["default"](
-+        hmrRuntimeOutput,
-+        "Expected to find HMR runtime in outputs"
-+      );
-+      let hmrRuntime =
-+        ctx.config.publicPath +
-+        path__namespace.relative(
-+          ctx.config.assetsBuildDirectory,
-+          path__namespace.resolve(hmrRuntimeOutput)
-+        );
-       hmr = {
-         runtime: hmrRuntime,
--        timestamp: Date.now()
-+        timestamp: Date.now(),
-       };
-     }
-     return {
-       metafile,
--      hmr
-+      hmr,
-     };
-   };
-   return {
-     compile,
-     cancel: compiler.cancel,
--    dispose: compiler.dispose
-+    dispose: compiler.dispose,
-   };
- };
- 
 diff --git a/dist/compiler/server/compiler.js b/dist/compiler/server/compiler.js
-index a5143271bd5f30487d7f2b052ce9b37229add46c..75211311520125c11a2800f6bb50278fb536a196 100644
+index a5143271bd5f30487d7f2b052ce9b37229add46c..396e023f188ef75ac52539d7876ac4fa6727ff19 100644
 --- a/dist/compiler/server/compiler.js
 +++ b/dist/compiler/server/compiler.js
 @@ -29,6 +29,7 @@ var entry = require('./plugins/entry.js');
  var routes = require('./plugins/routes.js');
  var external = require('../plugins/external.js');
  var cssBundlePlugin = require('../plugins/cssBundlePlugin.js');
-+var million = require('million/compiler')
++var million = require('million/compiler');
  
  function _interopNamespace(e) {
    if (e && e.__esModule) return e;

@@ -10,16 +10,21 @@ export const meta: V2_MetaFunction = () => {
 
 let NoSSRBlock = block(
   function NoSSR() {
-    return <div>{Math.random()}</div>;
+    return <div>client rendered {Math.random()}</div>;
   },
   { ssr: false }
 );
+
+let SSRBlock = block(function SSR() {
+  return <div>server rendered {Math.random()}</div>;
+});
 
 export default function Index() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
       <h1>Welcome to Remix</h1>
       <NoSSRBlock />
+      <SSRBlock />
       <ul>
         <li>
           <a
