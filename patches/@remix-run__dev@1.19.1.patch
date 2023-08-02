@@ -1,0 +1,42 @@
+diff --git a/dist/compiler/js/compiler.js b/dist/compiler/js/compiler.js
+index de3efe9cd19b494a1163299337d7fd82c3e74abb..35f42bf85efcf187ccff5eba02faac383cab9bef 100644
+--- a/dist/compiler/js/compiler.js
++++ b/dist/compiler/js/compiler.js
+@@ -32,6 +32,7 @@ var vanillaExtract = require('../plugins/vanillaExtract.js');
+ var invariant = require('../../invariant.js');
+ var hmr = require('./plugins/hmr.js');
+ var analysis = require('../analysis.js');
++var million = require('million/compiler');
+ 
+ function _interopNamespace(e) {
+   if (e && e.__esModule) return e;
+@@ -94,7 +95,7 @@ const createEsbuildConfig = (ctx, refs) => {
+     includeNodeModules: true
+   }), esbuildPluginsNodeModulesPolyfill.nodeModulesPolyfillPlugin(), external.externalPlugin(/^node:.*/, {
+     sideEffects: false
+-  })];
++  }), million.esbuild({ server: true, auto: true })];
+   if (ctx.options.mode === "development" && ctx.config.future.v2_dev) {
+     plugins.push(hmr.hmrPlugin(ctx));
+   }
+diff --git a/dist/compiler/server/compiler.js b/dist/compiler/server/compiler.js
+index 5080241042b562d270c477fe2cc92972f5b63cb3..07b9d9599f78082f509c709fdeb1d383c4a4e17a 100644
+--- a/dist/compiler/server/compiler.js
++++ b/dist/compiler/server/compiler.js
+@@ -30,6 +30,7 @@ var routes = require('./plugins/routes.js');
+ var external = require('../plugins/external.js');
+ var cssBundlePlugin = require('../plugins/cssBundlePlugin.js');
+ var analysis = require('../analysis.js');
++var million = require('million/compiler');
+ 
+ function _interopNamespace(e) {
+   if (e && e.__esModule) return e;
+@@ -71,7 +72,7 @@ const createEsbuildConfig = (ctx, refs) => {
+     sideEffects: false
+   }), mdx.mdxPlugin(ctx), emptyModules.emptyModulesPlugin(ctx, /\.client(\.[jt]sx?)?$/), routes.serverRouteModulesPlugin(ctx), entry.serverEntryModulePlugin(ctx), manifest.serverAssetsManifestPlugin(refs), bareImports.serverBareModulesPlugin(ctx), external.externalPlugin(/^node:.*/, {
+     sideEffects: false
+-  })];
++  }), million.esbuild({ server: true, auto: true })];
+   if (ctx.config.serverNodeBuiltinsPolyfill) {
+     plugins.unshift(esbuildPluginsNodeModulesPolyfill.nodeModulesPolyfillPlugin({
+       // Ensure only "modules" option is passed to the plugin

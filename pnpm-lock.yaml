@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@remix-run/dev@1.19.1':
+    hash: vfgw7rvhbqfkpdhh4ugcgveqaa
+    path: patches/@remix-run__dev@1.19.1.patch
+
 dependencies:
   '@remix-run/css-bundle':
     specifier: ^1.19.1
@@ -33,7 +38,7 @@ dependencies:
 devDependencies:
   '@remix-run/dev':
     specifier: ^1.19.1
-    version: 1.19.1(@remix-run/serve@1.19.1)
+    version: 1.19.1(patch_hash=vfgw7rvhbqfkpdhh4ugcgveqaa)(@remix-run/serve@1.19.1)
   '@remix-run/eslint-config':
     specifier: ^1.19.1
     version: 1.19.1(eslint@8.46.0)(react@18.2.0)(typescript@5.1.6)
@@ -1908,7 +1913,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dev: false
 
-  /@remix-run/dev@1.19.1(@remix-run/serve@1.19.1):
+  /@remix-run/dev@1.19.1(patch_hash=vfgw7rvhbqfkpdhh4ugcgveqaa)(@remix-run/serve@1.19.1):
     resolution: {integrity: sha512-Piv/neRW1yMscvDpg8RZnyFzEYHT0etr3DYvBbSSe3wOWlXRItUFaXdn8I4ecp4gBkaNJmCni8ueYsk8FeqoBw==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -1988,6 +1993,7 @@ packages:
       - ts-node
       - utf-8-validate
     dev: true
+    patched: true
 
   /@remix-run/eslint-config@1.19.1(eslint@8.46.0)(react@18.2.0)(typescript@5.1.6):
     resolution: {integrity: sha512-N4/IrN3Z6Rq+lB6zHbiqpA0XuP2fC+rRAi3jUsZvx0PppnKSNPW8f/qR9dD92RGxRAMOiv+ZLrrKBAwwfzPJ2w==}
