@@ -1,1 +1,1 @@
-https://remix-million.onrender.com
+https://remix-million-production.up.railway.app
